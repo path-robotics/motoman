@@ -1,0 +1,234 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+  <!--
+          Originally from https://github.com/ros-industrial/universal_robot.
+          Modified for use.
+
+    Author: Ludovic Delval
+    Contributor: Felix Messmer
+    Contributor: Alec Tiefenthal
+  -->
+
+  <!--
+    NOTE: this macro stores the defined properties in the scope of the caller.
+          However, it is unwise for users MUST NOT rely on these properties,
+          their contents or their names. Usage outside of Motoman packages is discouraged.
+  -->
+  <xacro:macro name="read_model_data" params="joint_limits_parameters_file kinematics_parameters_file physical_parameters_file visual_parameters_file">
+    <!-- Read .yaml files from disk, load content into properties -->
+    <xacro:property name="__joint_limit_parameters" value="${load_yaml(joint_limits_parameters_file)}"/>
+    <xacro:property name="__kinematics_parameters" value="${load_yaml(kinematics_parameters_file)}"/>
+    <xacro:property name="__physical_parameters" value="${load_yaml(physical_parameters_file)}"/>
+    <xacro:property name="__visual_parameters" value="${load_yaml(visual_parameters_file)}"/>
+
+    <!-- Extract subsections from yaml dictionaries -->
+    <xacro:property name="__limits" value="${__joint_limit_parameters['joint_limits']}"/>
+    <xacro:property name="__dh_parameters" value="${__physical_parameters['dh_parameters']}"/>
+    <xacro:property name="__inertia_parameters" value="${__physical_parameters['inertia_parameters']}" />
+    <xacro:property name="__mesh_files" value="${__visual_parameters['mesh_files']}" />
+    <xacro:property name="__kinematics" value="${__kinematics_parameters['kinematics']}" />
+
+    <!-- JOINTS LIMIT PARAMETERS -->
+    <xacro:property name="1_s_lower_limit" value="${__limits['1_s']['min_position']}" scope="parent"/>
+    <xacro:property name="1_s_upper_limit" value="${__limits['1_s']['max_position']}" scope="parent"/>
+    <xacro:property name="1_s_velocity_limit" value="${__limits['1_s']['max_velocity']}" scope="parent"/>
+    <xacro:property name="1_s_effort_limit" value="${__limits['1_s']['max_effort']}" scope="parent"/>
+    <xacro:property name="2_l_lower_limit" value="${__limits['2_l']['min_position']}" scope="parent"/>
+    <xacro:property name="2_l_upper_limit" value="${__limits['2_l']['max_position']}" scope="parent"/>
+    <xacro:property name="2_l_velocity_limit" value="${__limits['2_l']['max_velocity']}" scope="parent"/>
+    <xacro:property name="2_l_effort_limit" value="${__limits['2_l']['max_effort']}" scope="parent"/>
+    <xacro:property name="3_u_lower_limit" value="${__limits['3_u']['min_position']}" scope="parent"/>
+    <xacro:property name="3_u_upper_limit" value="${__limits['3_u']['max_position']}" scope="parent"/>
+    <xacro:property name="3_u_velocity_limit" value="${__limits['3_u']['max_velocity']}" scope="parent"/>
+    <xacro:property name="3_u_effort_limit" value="${__limits['3_u']['max_effort']}" scope="parent"/>
+    <xacro:property name="4_r_lower_limit" value="${__limits['4_r']['min_position']}" scope="parent"/>
+    <xacro:property name="4_r_upper_limit" value="${__limits['4_r']['max_position']}" scope="parent"/>
+    <xacro:property name="4_r_velocity_limit" value="${__limits['4_r']['max_velocity']}" scope="parent"/>
+    <xacro:property name="4_r_effort_limit" value="${__limits['4_r']['max_effort']}" scope="parent"/>
+    <xacro:property name="5_b_lower_limit" value="${__limits['5_b']['min_position']}" scope="parent"/>
+    <xacro:property name="5_b_upper_limit" value="${__limits['5_b']['max_position']}" scope="parent"/>
+    <xacro:property name="5_b_velocity_limit" value="${__limits['5_b']['max_velocity']}" scope="parent"/>
+    <xacro:property name="5_b_effort_limit" value="${__limits['5_b']['max_effort']}" scope="parent"/>
+    <xacro:property name="6_t_lower_limit" value="${__limits['6_t']['min_position']}" scope="parent"/>
+    <xacro:property name="6_t_upper_limit" value="${__limits['6_t']['max_position']}" scope="parent"/>
+    <xacro:property name="6_t_velocity_limit" value="${__limits['6_t']['max_velocity']}" scope="parent"/>
+    <xacro:property name="6_t_effort_limit" value="${__limits['6_t']['max_effort']}" scope="parent"/>
+
+    <!-- DH PARAMETERS -->
+    <xacro:property name="d1" value="${__dh_parameters['d1']}" scope="parent"/>
+    <xacro:property name="a2" value="${__dh_parameters['a2']}" scope="parent"/>
+    <xacro:property name="a3" value="${__dh_parameters['a3']}" scope="parent"/>
+    <xacro:property name="d4" value="${__dh_parameters['d4']}" scope="parent"/>
+    <xacro:property name="d5" value="${__dh_parameters['d5']}" scope="parent"/>
+    <xacro:property name="d6" value="${__dh_parameters['d6']}" scope="parent"/>
+
+    <!-- kinematics -->
+    <xacro:property name="1_s_x" value="${__kinematics['1_s']['x']}" scope="parent"/>
+    <xacro:property name="1_s_y" value="${__kinematics['1_s']['y']}" scope="parent"/>
+    <xacro:property name="1_s_z" value="${__kinematics['1_s']['z']}" scope="parent"/>
+    <xacro:property name="1_s_roll" value="${__kinematics['1_s']['roll']}" scope="parent"/>
+    <xacro:property name="1_s_pitch" value="${__kinematics['1_s']['pitch']}" scope="parent"/>
+    <xacro:property name="1_s_yaw" value="${__kinematics['1_s']['yaw']}" scope="parent"/>
+
+    <xacro:property name="2_l_x" value="${__kinematics['2_l']['x']}" scope="parent"/>
+    <xacro:property name="2_l_y" value="${__kinematics['2_l']['y']}" scope="parent"/>
+    <xacro:property name="2_l_z" value="${__kinematics['2_l']['z']}" scope="parent"/>
+    <xacro:property name="2_l_roll" value="${__kinematics['2_l']['roll']}" scope="parent"/>
+    <xacro:property name="2_l_pitch" value="${__kinematics['2_l']['pitch']}" scope="parent"/>
+    <xacro:property name="2_l_yaw" value="${__kinematics['2_l']['yaw']}" scope="parent"/>
+
+    <xacro:property name="3_u_x" value="${__kinematics['3_u']['x']}" scope="parent"/>
+    <xacro:property name="3_u_y" value="${__kinematics['3_u']['y']}" scope="parent"/>
+    <xacro:property name="3_u_z" value="${__kinematics['3_u']['z']}" scope="parent"/>
+    <xacro:property name="3_u_roll" value="${__kinematics['3_u']['roll']}" scope="parent"/>
+    <xacro:property name="3_u_pitch" value="${__kinematics['3_u']['pitch']}" scope="parent"/>
+    <xacro:property name="3_u_yaw" value="${__kinematics['3_u']['yaw']}" scope="parent"/>
+
+    <xacro:property name="4_r_x" value="${__kinematics['4_r']['x']}" scope="parent"/>
+    <xacro:property name="4_r_y" value="${__kinematics['4_r']['y']}" scope="parent"/>
+    <xacro:property name="4_r_z" value="${__kinematics['4_r']['z']}" scope="parent"/>
+    <xacro:property name="4_r_roll" value="${__kinematics['4_r']['roll']}" scope="parent"/>
+    <xacro:property name="4_r_pitch" value="${__kinematics['4_r']['pitch']}" scope="parent"/>
+    <xacro:property name="4_r_yaw" value="${__kinematics['4_r']['yaw']}" scope="parent"/>
+
+    <xacro:property name="5_b_x" value="${__kinematics['5_b']['x']}" scope="parent"/>
+    <xacro:property name="5_b_y" value="${__kinematics['5_b']['y']}" scope="parent"/>
+    <xacro:property name="5_b_z" value="${__kinematics['5_b']['z']}" scope="parent"/>
+    <xacro:property name="5_b_roll" value="${__kinematics['5_b']['roll']}" scope="parent"/>
+    <xacro:property name="5_b_pitch" value="${__kinematics['5_b']['pitch']}" scope="parent"/>
+    <xacro:property name="5_b_yaw" value="${__kinematics['5_b']['yaw']}" scope="parent"/>
+
+    <xacro:property name="6_t_x" value="${__kinematics['6_t']['x']}" scope="parent"/>
+    <xacro:property name="6_t_y" value="${__kinematics['6_t']['y']}" scope="parent"/>
+    <xacro:property name="6_t_z" value="${__kinematics['6_t']['z']}" scope="parent"/>
+    <xacro:property name="6_t_roll" value="${__kinematics['6_t']['roll']}" scope="parent"/>
+    <xacro:property name="6_t_pitch" value="${__kinematics['6_t']['pitch']}" scope="parent"/>
+    <xacro:property name="6_t_yaw" value="${__kinematics['6_t']['yaw']}" scope="parent"/>
+
+    <!-- INERTIA PARAMETERS -->
+    <!-- mass -->
+    <xacro:property name="base_mass" value="${__inertia_parameters['base_mass']}" scope="parent"/>
+    <xacro:property name="1_s_mass" value="${__inertia_parameters['1_s_mass']}" scope="parent"/>
+    <xacro:property name="2_l_mass" value="${__inertia_parameters['2_l_mass']}" scope="parent"/>
+    <xacro:property name="3_u_mass" value="${__inertia_parameters['3_u_mass']}" scope="parent"/>
+    <xacro:property name="4_r_mass" value="${__inertia_parameters['4_r_mass']}" scope="parent"/>
+    <xacro:property name="5_b_mass" value="${__inertia_parameters['5_b_mass']}" scope="parent"/>
+    <xacro:property name="6_t_mass" value="${__inertia_parameters['6_t_mass']}" scope="parent"/>
+    <!-- link inertia parameter -->
+    <xacro:property name="__intertia_links" value="${__inertia_parameters['links']}" scope="parent"/>
+    <xacro:property name="base_inertia_radius" value="${__intertia_links['base']['radius']}" scope="parent"/>
+    <xacro:property name="base_inertia_length" value="${__intertia_links['base']['length']}" scope="parent"/>
+    <xacro:property name="1_s_inertia_radius" value="${__intertia_links['1_s']['radius']}" scope="parent"/>
+    <xacro:property name="1_s_inertia_length" value="${__intertia_links['1_s']['length']}" scope="parent"/>
+    <xacro:property name="2_l_inertia_radius" value="${__intertia_links['2_l']['radius']}" scope="parent"/>
+    <xacro:property name="2_l_inertia_length" value="${__intertia_links['2_l']['length']}" scope="parent"/>
+    <xacro:property name="3_u_inertia_radius" value="${__intertia_links['3_u']['radius']}" scope="parent"/>
+    <xacro:property name="3_u_inertia_length" value="${__intertia_links['3_u']['length']}" scope="parent"/>
+    <xacro:property name="4_r_inertia_radius" value="${__intertia_links['4_r']['radius']}" scope="parent"/>
+    <xacro:property name="4_r_inertia_length" value="${__intertia_links['4_r']['length']}" scope="parent"/>
+    <xacro:property name="5_b_inertia_radius" value="${__intertia_links['5_b']['radius']}" scope="parent"/>
+    <xacro:property name="5_b_inertia_length" value="${__intertia_links['5_b']['length']}" scope="parent"/>
+    <xacro:property name="6_t_inertia_radius" value="${__intertia_links['6_t']['radius']}" scope="parent"/>
+    <xacro:property name="6_t_inertia_length" value="${__intertia_links['6_t']['length']}" scope="parent"/>
+
+    <!-- center of mass -->
+    <xacro:property name="__1_s_cog" value="${__inertia_parameters['center_of_mass']['1_s_cog']}" scope="parent"/>
+    <xacro:property name="__2_l_cog" value="${__inertia_parameters['center_of_mass']['2_l_cog']}" scope="parent"/>
+    <xacro:property name="__3_u_cog" value="${__inertia_parameters['center_of_mass']['3_u_cog']}" scope="parent"/>
+    <xacro:property name="__4_r_cog" value="${__inertia_parameters['center_of_mass']['4_r_cog']}" scope="parent"/>
+    <xacro:property name="__5_b_cog" value="${__inertia_parameters['center_of_mass']['5_b_cog']}" scope="parent"/>
+    <xacro:property name="__6_t_cog" value="${__inertia_parameters['center_of_mass']['6_t_cog']}" scope="parent"/>
+
+    <xacro:property name="1_s_cog" value="${__1_s_cog['x']} ${__1_s_cog['y']} ${__1_s_cog['z']}" scope="parent"/>
+    <xacro:property name="2_l_cog" value="${__2_l_cog['x']} ${__2_l_cog['y']} ${__2_l_cog['z']}" scope="parent"/>
+    <xacro:property name="3_u_cog" value="${__3_u_cog['x']} ${__3_u_cog['y']} ${__3_u_cog['z']}" scope="parent"/>
+    <xacro:property name="4_r_cog" value="${__4_r_cog['x']} ${__4_r_cog['y']} ${__4_r_cog['z']}" scope="parent"/>
+    <xacro:property name="5_b_cog" value="${__5_b_cog['x']} ${__5_b_cog['y']} ${__5_b_cog['z']}" scope="parent"/>
+    <xacro:property name="6_t_cog" value="${__6_t_cog['x']} ${__6_t_cog['y']} ${__6_t_cog['z']}" scope="parent"/>
+
+    <!-- Mesh files -->
+    <xacro:property name="__base_mesh" value="${__mesh_files['base']}"/>
+    <xacro:property name="base_visual_mesh" value="${__base_mesh['visual']['mesh']}" scope="parent"/>
+    <xacro:property name="base_visual_material_name" value="${__base_mesh['visual']['material']['name']}" scope="parent"/>
+    <xacro:property name="base_visual_material_color" value="${__base_mesh['visual']['material']['color']}" scope="parent"/>
+    <xacro:property name="base_collision_mesh" value="${__base_mesh['collision']['mesh']}" scope="parent"/>
+    <xacro:property name="base_mesh_x" value="${__base_mesh['x']}" scope="parent"/>
+    <xacro:property name="base_mesh_y" value="${__base_mesh['y']}" scope="parent"/>
+    <xacro:property name="base_mesh_z" value="${__base_mesh['z']}" scope="parent"/>
+    <xacro:property name="base_mesh_roll" value="${__base_mesh['roll']}" scope="parent"/>
+    <xacro:property name="base_mesh_pitch" value="${__base_mesh['pitch']}" scope="parent"/>
+    <xacro:property name="base_mesh_yaw" value="${__base_mesh['yaw']}" scope="parent"/>
+
+    <xacro:property name="__1_s_mesh" value="${__mesh_files['1_s']}"/>
+    <xacro:property name="1_s_visual_mesh" value="${__1_s_mesh['visual']['mesh']}" scope="parent"/>
+    <xacro:property name="1_s_visual_material_name" value="${__1_s_mesh['visual']['material']['name']}" scope="parent"/>
+    <xacro:property name="1_s_visual_material_color" value="${__1_s_mesh['visual']['material']['color']}" scope="parent"/>
+    <xacro:property name="1_s_collision_mesh" value="${__1_s_mesh['collision']['mesh']}" scope="parent"/>
+    <xacro:property name="1_s_mesh_x" value="${__1_s_mesh['x']}" scope="parent"/>
+    <xacro:property name="1_s_mesh_y" value="${__1_s_mesh['y']}" scope="parent"/>
+    <xacro:property name="1_s_mesh_z" value="${__1_s_mesh['z']}" scope="parent"/>
+    <xacro:property name="1_s_mesh_roll" value="${__1_s_mesh['roll']}" scope="parent"/>
+    <xacro:property name="1_s_mesh_pitch" value="${__1_s_mesh['pitch']}" scope="parent"/>
+    <xacro:property name="1_s_mesh_yaw" value="${__1_s_mesh['yaw']}" scope="parent"/>
+
+    <xacro:property name="__2_l_mesh" value="${__mesh_files['2_l']}"/>
+    <xacro:property name="2_l_visual_mesh" value="${__2_l_mesh['visual']['mesh']}" scope="parent"/>
+    <xacro:property name="2_l_visual_material_name" value="${__2_l_mesh['visual']['material']['name']}" scope="parent"/>
+    <xacro:property name="2_l_visual_material_color" value="${__2_l_mesh['visual']['material']['color']}" scope="parent"/>
+    <xacro:property name="2_l_collision_mesh" value="${__2_l_mesh['collision']['mesh']}" scope="parent"/>
+    <xacro:property name="2_l_mesh_x" value="${__2_l_mesh['x']}" scope="parent"/>
+    <xacro:property name="2_l_mesh_y" value="${__2_l_mesh['y']}" scope="parent"/>
+    <xacro:property name="2_l_mesh_z" value="${__2_l_mesh['z']}" scope="parent"/>
+    <xacro:property name="2_l_mesh_roll" value="${__2_l_mesh['roll']}" scope="parent"/>
+    <xacro:property name="2_l_mesh_pitch" value="${__2_l_mesh['pitch']}" scope="parent"/>
+    <xacro:property name="2_l_mesh_yaw" value="${__2_l_mesh['yaw']}" scope="parent"/>
+
+    <xacro:property name="__3_u_mesh" value="${__mesh_files['3_u']}"/>
+    <xacro:property name="3_u_visual_mesh" value="${__3_u_mesh['visual']['mesh']}" scope="parent"/>
+    <xacro:property name="3_u_visual_material_name" value="${__3_u_mesh['visual']['material']['name']}" scope="parent"/>
+    <xacro:property name="3_u_visual_material_color" value="${__3_u_mesh['visual']['material']['color']}" scope="parent"/>
+    <xacro:property name="3_u_collision_mesh" value="${__3_u_mesh['collision']['mesh']}" scope="parent"/>
+    <xacro:property name="3_u_mesh_x" value="${__3_u_mesh['x']}" scope="parent"/>
+    <xacro:property name="3_u_mesh_y" value="${__3_u_mesh['y']}" scope="parent"/>
+    <xacro:property name="3_u_mesh_z" value="${__3_u_mesh['z']}" scope="parent"/>
+    <xacro:property name="3_u_mesh_roll" value="${__3_u_mesh['roll']}" scope="parent"/>
+    <xacro:property name="3_u_mesh_pitch" value="${__3_u_mesh['pitch']}" scope="parent"/>
+    <xacro:property name="3_u_mesh_yaw" value="${__3_u_mesh['yaw']}" scope="parent"/>
+
+    <xacro:property name="__4_r_mesh" value="${__mesh_files['4_r']}"/>
+    <xacro:property name="4_r_visual_mesh" value="${__4_r_mesh['visual']['mesh']}" scope="parent"/>
+    <xacro:property name="4_r_visual_material_name" value="${__4_r_mesh['visual']['material']['name']}" scope="parent"/>
+    <xacro:property name="4_r_visual_material_color" value="${__4_r_mesh['visual']['material']['color']}" scope="parent"/>
+    <xacro:property name="4_r_collision_mesh" value="${__4_r_mesh['collision']['mesh']}" scope="parent"/>
+    <xacro:property name="4_r_mesh_x" value="${__4_r_mesh['x']}" scope="parent"/>
+    <xacro:property name="4_r_mesh_y" value="${__4_r_mesh['y']}" scope="parent"/>
+    <xacro:property name="4_r_mesh_z" value="${__4_r_mesh['z']}" scope="parent"/>
+    <xacro:property name="4_r_mesh_roll" value="${__4_r_mesh['roll']}" scope="parent"/>
+    <xacro:property name="4_r_mesh_pitch" value="${__4_r_mesh['pitch']}" scope="parent"/>
+    <xacro:property name="4_r_mesh_yaw" value="${__4_r_mesh['yaw']}" scope="parent"/>
+
+    <xacro:property name="__5_b_mesh" value="${__mesh_files['5_b']}"/>
+    <xacro:property name="5_b_visual_mesh" value="${__5_b_mesh['visual']['mesh']}" scope="parent"/>
+    <xacro:property name="5_b_visual_material_name" value="${__5_b_mesh['visual']['material']['name']}" scope="parent"/>
+    <xacro:property name="5_b_visual_material_color" value="${__5_b_mesh['visual']['material']['color']}" scope="parent"/>
+    <xacro:property name="5_b_collision_mesh" value="${__5_b_mesh['collision']['mesh']}" scope="parent"/>
+    <xacro:property name="5_b_mesh_x" value="${__5_b_mesh['x']}" scope="parent"/>
+    <xacro:property name="5_b_mesh_y" value="${__5_b_mesh['y']}" scope="parent"/>
+    <xacro:property name="5_b_mesh_z" value="${__5_b_mesh['z']}" scope="parent"/>
+    <xacro:property name="5_b_mesh_roll" value="${__5_b_mesh['roll']}" scope="parent"/>
+    <xacro:property name="5_b_mesh_pitch" value="${__5_b_mesh['pitch']}" scope="parent"/>
+    <xacro:property name="5_b_mesh_yaw" value="${__5_b_mesh['yaw']}" scope="parent"/>
+
+    <xacro:property name="__6_t_mesh" value="${__mesh_files['6_t']}"/>
+    <xacro:property name="6_t_visual_mesh" value="${__6_t_mesh['visual']['mesh']}" scope="parent"/>
+    <xacro:property name="6_t_visual_material_name" value="${__6_t_mesh['visual']['material']['name']}" scope="parent"/>
+    <xacro:property name="6_t_visual_material_color" value="${__6_t_mesh['visual']['material']['color']}" scope="parent"/>
+    <xacro:property name="6_t_collision_mesh" value="${__6_t_mesh['collision']['mesh']}" scope="parent"/>
+    <xacro:property name="6_t_mesh_x" value="${__6_t_mesh['x']}" scope="parent"/>
+    <xacro:property name="6_t_mesh_y" value="${__6_t_mesh['y']}" scope="parent"/>
+    <xacro:property name="6_t_mesh_z" value="${__6_t_mesh['z']}" scope="parent"/>
+    <xacro:property name="6_t_mesh_roll" value="${__6_t_mesh['roll']}" scope="parent"/>
+    <xacro:property name="6_t_mesh_pitch" value="${__6_t_mesh['pitch']}" scope="parent"/>
+    <xacro:property name="6_t_mesh_yaw" value="${__6_t_mesh['yaw']}" scope="parent"/>
+  </xacro:macro>
+</robot>

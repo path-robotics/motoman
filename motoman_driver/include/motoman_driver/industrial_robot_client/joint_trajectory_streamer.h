@@ -60,6 +60,17 @@ typedef TransferStates::TransferState TransferState;
  * \brief Message handler that streams joint trajectories to the robot controller
  */
 
+
+struct StreamInfo
+{
+  StreamInfo() = default;
+  boost::mutex mutex_;
+  int current_point_;
+  std::vector<SimpleMessage> current_traj_;
+  TransferState state_;
+  ros::Time streaming_start_;
+};
+
 // * JointTrajectoryStreamer
 /**
  *
@@ -124,16 +135,26 @@ public:
 
   bool send_to_robot(const std::vector<SimpleMessage>& messages);
 
+  virtual bool send_to_robot(const std::vector<SimpleMessage>& messages, int group_number);
+
+  void jointTrajectoryExCB(const motoman_msgs::DynamicJointTrajectoryConstPtr &msg);
+
 protected:
   void trajectoryStop();
 
   boost::thread* streaming_thread_;
+
+  // TODO: Kept for compatibility. Remove.
   boost::mutex mutex_;
   int current_point_;
   std::vector<SimpleMessage> current_traj_;
   TransferState state_;
   ros::Time streaming_start_;
+
+
   int min_buffer_size_;
+
+  std::map<int, StreamInfo> stream_infos_;
 };
 
 }  // namespace joint_trajectory_streamer

@@ -301,6 +301,7 @@ void JointTrajectoryAction::goalCB(JointTractoryActionServer::GoalHandle gh)
   // Publishing the joint names for the 4 groups
   dyn_traj.joint_names = all_joint_names_;
 
+  ROS_WARN_STREAM("Publishing to topic (standard goal): " << this->pub_trajectory_command_.getTopic());
   this->pub_trajectory_command_.publish(dyn_traj);
 }
 
@@ -324,6 +325,12 @@ void JointTrajectoryAction::goalCB(JointTractoryActionServer::GoalHandle gh, int
       if (has_active_goal_map_[group_number])
       {
         ROS_WARN("Received new goal, canceling current goal");
+        ROS_WARN_STREAM("Group number: " << std::to_string(group_number));
+
+        for(auto n : gh.getGoal()->trajectory.joint_names)
+        {
+          ROS_WARN_STREAM("Joint name: " << n);
+        }
         abortGoal(group_number);
       }
       // Sends the trajectory along to the controller
@@ -393,6 +400,8 @@ void JointTrajectoryAction::goalCB(JointTractoryActionServer::GoalHandle gh, int
         }
         dyn_traj.header = gh.getGoal()->trajectory.header;
         dyn_traj.joint_names = gh.getGoal()->trajectory.joint_names;
+
+        ROS_WARN_STREAM("Publishing to topic: " << this->pub_trajectories_[group_number].getTopic());
         this->pub_trajectories_[group_number].publish(dyn_traj);
       }
     }

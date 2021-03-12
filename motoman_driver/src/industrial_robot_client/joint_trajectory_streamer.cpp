@@ -51,6 +51,19 @@ bool JointTrajectoryStreamer::init(SmplMsgConnection* connection, const std::map
 
   rtn &= JointTrajectoryInterface::init(connection, robot_groups, velocity_limits);
 
+  for(const auto& group : robot_groups)
+  {
+    // May not have to do this, but do it right now due to mutex not being movable
+    this->stream_infos_.emplace(std::piecewise_construct, std::make_tuple(group.first), std::make_tuple());
+    this->stream_infos_.at(group.first).mutex_.lock();
+    this->stream_infos_.at(group.first).current_point_ = 0;
+    this->stream_infos_.at(group.first).state_ = TransferStates::IDLE;
+    // this->streaming_thread_ =
+    //     new boost::thread(boost::bind(&JointTrajectoryStreamer::streamingThread, this));
+    ROS_INFO("Unlocking mutex");
+    this->stream_infos_.at(group.first).mutex_.unlock();
+  }
+
   this->mutex_.lock();
   this->current_point_ = 0;
   this->state_ = TransferStates::IDLE;
@@ -87,8 +100,36 @@ JointTrajectoryStreamer::~JointTrajectoryStreamer()
   delete this->streaming_thread_;
 }
 
+void JointTrajectoryStreamer::jointTrajectoryExCB(
+    const motoman_msgs::DynamicJointTrajectoryConstPtr &msg)
+{
+  ROS_INFO("Receiving joint trajectory message Dynamic");
+
+  // check for STOP command
+  if (msg->points.empty())
+  {
+    ROS_INFO("Empty trajectory received, canceling current trajectory");
+    trajectoryStop();
+    return;
+  }
+
+  // convert trajectory into robot-format
+  std::vector<SimpleMessage> robot_msgs;
+  if (!trajectory_to_msgs(msg, &robot_msgs))
+    return;
+  ROS_WARN("Conversion complete. Sending to robot.");
+  // send command messages to robot
+  // traj->points[0].num_groups == 1
+  if(msg->points[0].num_groups == 1)
+    send_to_robot(robot_msgs, msg->points[0].groups[0].group_number);
+  else
+    send_to_robot(robot_msgs);
+}
+
+
 void JointTrajectoryStreamer::jointTrajectoryCB(const motoman_msgs::DynamicJointTrajectoryConstPtr &msg)
 {
+  ROS_ERROR("Receiving joint trajectory message jointTrajectoryCB dynamic");
   ROS_INFO("Receiving joint trajectory message");
 
   // read current state value (should be atomic)
@@ -125,6 +166,7 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const motoman_msgs::DynamicJoint
 
 void JointTrajectoryStreamer::jointTrajectoryCB(const trajectory_msgs::JointTrajectoryConstPtr &msg)
 {
+  ROS_ERROR("Receiving joint trajectory message jointTrajectoryCB");
   ROS_INFO("Receiving joint trajectory message");
 
   // read current state value (should be atomic)
@@ -162,6 +204,9 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const trajectory_msgs::JointTraj
 bool JointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& messages)
 {
   ROS_INFO("Loading trajectory, setting state to streaming");
+
+  while (this->state_ == TransferStates::STREAMING)
+    ros::Duration(0.005).sleep();
   this->mutex_.lock();
   {
     ROS_INFO("Executing trajectory of size: %d", static_cast<int>(messages.size()));
@@ -171,6 +216,25 @@ bool JointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& me
     this->streaming_start_ = ros::Time::now();
   }
   this->mutex_.unlock();
+
+  return true;
+}
+
+bool JointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& messages, int group_number)
+{
+  ROS_INFO("Loading trajectory, setting state to streaming");
+
+  while (this->stream_infos_.at(group_number).state_ == TransferStates::STREAMING)
+    ros::Duration(0.005).sleep();
+  this->stream_infos_.at(group_number).mutex_.lock();
+  {
+    ROS_INFO("Executing trajectory of size: %d", static_cast<int>(messages.size()));
+    this->stream_infos_.at(group_number).current_traj_ = messages;
+    this->stream_infos_.at(group_number).current_point_ = 0;
+    this->stream_infos_.at(group_number).state_ = TransferStates::STREAMING;
+    this->stream_infos_.at(group_number).streaming_start_ = ros::Time::now();
+  }
+  this->stream_infos_.at(group_number).mutex_.unlock();
 
   return true;
 }

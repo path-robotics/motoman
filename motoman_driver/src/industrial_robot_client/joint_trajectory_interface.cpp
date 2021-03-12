@@ -224,6 +224,7 @@ bool JointTrajectoryInterface::jointTrajectoryCB(
   return true;  // always return true.  To distinguish between call-failed and service-unavailable.
 }
 
+// Is the callback that is called when a message comes though on the joint_path_command topic
 void JointTrajectoryInterface::jointTrajectoryExCB(
   const motoman_msgs::DynamicJointTrajectoryConstPtr &msg)
 {
@@ -241,7 +242,7 @@ void JointTrajectoryInterface::jointTrajectoryExCB(
   std::vector<SimpleMessage> robot_msgs;
   if (!trajectory_to_msgs(msg, &robot_msgs))
     return;
-
+  ROS_WARN("Conversion complete. Sending to robot.");
   // send command messages to robot
   send_to_robot(robot_msgs);
 }

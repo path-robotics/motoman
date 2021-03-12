@@ -13,7 +13,7 @@
 
   <!-- load the correct version of the motion streaming node -->
   <node if="$(arg use_bswap)" name="motion_streaming_interface"
-        pkg="motoman_driver" type="motion_streaming_interface_bswap" />
+        pkg="motoman_driver" type="motion_streaming_interface_bswap" output="screen"/>
   <node unless="$(arg use_bswap)" name="motion_streaming_interface"
-        pkg="motoman_driver" type="motion_streaming_interface" />
+        pkg="motoman_driver" type="motion_streaming_interface" output="screen"/>
 </launch>

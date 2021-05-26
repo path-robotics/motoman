@@ -161,6 +161,11 @@ void JointTrajectoryStreamer::jointTrajectoryCB(const trajectory_msgs::JointTraj
 
 bool JointTrajectoryStreamer::send_to_robot(const std::vector<SimpleMessage>& messages)
 {
+  ROS_WARN("send_to_robot");
+  ROS_WARN("send_to_robot");
+  ROS_WARN("send_to_robot");
+  ROS_WARN("send_to_robot");
+  ROS_WARN("send_to_robot");
   ROS_INFO("Loading trajectory, setting state to streaming");
   this->mutex_.lock();
   {

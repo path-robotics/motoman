@@ -13,11 +13,16 @@
         <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <sphere radius="0.02"/> <!--Operation1-->
+          <mesh filename="package://motoman_gp20hl_support/meshes/collision/base_link.stl"/>
         </geometry>
       </collision>
+      <!--<collision>-->
+      <!--  <origin xyz="0 0 0" rpy="0 0 0"/>-->
+      <!--  <geometry>-->
+      <!--    <sphere radius="0.02"/> &lt;!&ndash;Operation1&ndash;&gt;-->
+      <!--  </geometry>-->
+      <!--</collision>-->
     </link>
     <link name="${prefix}link_1_s">
       <visual>
@@ -27,17 +32,22 @@
         <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
-        <origin xyz="0.145 0 0" rpy="0 0 0"/>
         <geometry>
-          <sphere radius="0.27"/> <!--Operation2-->
+          <mesh filename="package://motoman_gp20hl_support/meshes/collision/link_1_s.stl"/>
         </geometry>
       </collision>
-      <collision>
-        <origin xyz="-0.04 -0.02 -0.14" rpy="0 0 0"/>
-        <geometry>
-          <sphere radius="0.36"/> <!--Expansion1-->
-        </geometry>
-      </collision>
+      <!--<collision>-->
+      <!--  <origin xyz="0.145 0 0" rpy="0 0 0"/>-->
+      <!--  <geometry>-->
+      <!--    <sphere radius="0.27"/> &lt;!&ndash;Operation2&ndash;&gt;-->
+      <!--  </geometry>-->
+      <!--</collision>-->
+      <!--<collision>-->
+      <!--  <origin xyz="-0.04 -0.02 -0.14" rpy="0 0 0"/>-->
+      <!--  <geometry>-->
+      <!--    <sphere radius="0.36"/> &lt;!&ndash;Expansion1&ndash;&gt;-->
+      <!--  </geometry>-->
+      <!--</collision>-->
     </link>
     <link name="${prefix}link_2_l">
       <visual>
@@ -47,23 +57,28 @@
         <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
-        <origin xyz="1.13 0 -0.19" rpy="0 0 0"/>
         <geometry>
-          <sphere radius="0.22"/> <!--Expansion3-->
+          <mesh filename="package://motoman_gp20hl_support/meshes/collision/link_2_l.stl"/>
         </geometry>
       </collision>
-      <collision>
-        <origin xyz="0.565 0 -0.19" rpy="0 ${radians(-90)} 0"/>
-        <geometry>
-          <cylinder length= "1.13" radius="0.17"/> <!--Expansion3-->
-        </geometry>
-      </collision>
-      <collision>
-        <origin xyz="0 0 -0.19" rpy="0 0 0"/>
-        <geometry>
-          <sphere radius="0.21"/> <!--Expansion2-->
-        </geometry>
-      </collision>
+      <!--<collision>-->
+      <!--  <origin xyz="1.13 0 -0.19" rpy="0 0 0"/>-->
+      <!--  <geometry>-->
+      <!--    <sphere radius="0.22"/> &lt;!&ndash;Expansion3&ndash;&gt;-->
+      <!--  </geometry>-->
+      <!--</collision>-->
+      <!--<collision>-->
+      <!--  <origin xyz="0.565 0 -0.19" rpy="0 ${radians(-90)} 0"/>-->
+      <!--  <geometry>-->
+      <!--    <cylinder length= "1.13" radius="0.17"/> &lt;!&ndash;Expansion3&ndash;&gt;-->
+      <!--  </geometry>-->
+      <!--</collision>-->
+      <!--<collision>-->
+      <!--  <origin xyz="0 0 -0.19" rpy="0 0 0"/>-->
+      <!--  <geometry>-->
+      <!--    <sphere radius="0.21"/> &lt;!&ndash;Expansion2&ndash;&gt;-->
+      <!--  </geometry>-->
+      <!--</collision>-->
     </link>
     <link name="${prefix}link_3_u">
       <visual>
@@ -73,23 +88,28 @@
         <xacro:material_yaskawa_blue/>
       </visual>
       <collision>
-        <origin xyz="0.13 -0.22 0.18" rpy="0 0 0"/>
         <geometry>
-          <sphere radius="0.215"/> <!--Expansion5-->
+          <mesh filename="package://motoman_gp20hl_support/meshes/collision/link_3_u.stl"/>
         </geometry>
       </collision>
-      <collision>
-        <origin xyz="0.25 -0.25 0" rpy="0 0 0"/>
-        <geometry>
-          <sphere radius="0.31"/> <!--Expansion4-->
-        </geometry>
-      </collision>
-      <collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <geometry>
-          <sphere radius="0.2"/> <!--Operation3-->
-        </geometry>
-      </collision>
+      <!--<collision>-->
+      <!--  <origin xyz="0.13 -0.22 0.18" rpy="0 0 0"/>-->
+      <!--  <geometry>-->
+      <!--    <sphere radius="0.215"/> &lt;!&ndash;Expansion5&ndash;&gt;-->
+      <!--  </geometry>-->
+      <!--</collision>-->
+      <!--<collision>-->
+      <!--  <origin xyz="0.25 -0.25 0" rpy="0 0 0"/>-->
+      <!--  <geometry>-->
+      <!--    <sphere radius="0.31"/> &lt;!&ndash;Expansion4&ndash;&gt;-->
+      <!--  </geometry>-->
+      <!--</collision>-->
+      <!--<collision>-->
+      <!--  <origin xyz="0 0 0" rpy="0 0 0"/>-->
+      <!--  <geometry>-->
+      <!--    <sphere radius="0.2"/> &lt;!&ndash;Operation3&ndash;&gt;-->
+      <!--  </geometry>-->
+      <!--</collision>-->
     </link>
     <link name="${prefix}link_4_r">
       <visual>
@@ -98,6 +118,11 @@
         </geometry>
         <xacro:material_yaskawa_blue/>
       </visual>
+      <collision>
+      <geometry>
+      <mesh filename="package://motoman_gp20hl_support/meshes/collision/link_4_r.stl"/>
+      </geometry>
+      </collision>
       <!--<collision>-->
       <!--  <origin xyz="0 0 ${1.562/2}" rpy="0 0 ${radians(90)}"/>-->
       <!--  <geometry>-->
@@ -110,11 +135,7 @@
       <!--    <sphere radius="0.13"/> &lt;!&ndash;Operation4&ndash;&gt;-->
       <!--  </geometry>-->
       <!--</collision>-->
-      <collision>
-        <geometry>
-          <mesh filename="package://motoman_gp20hl_support/meshes/collision/link_4_r.stl"/>
-        </geometry>
-      </collision>
+
       <!--<collision>-->
       <!--  <origin xyz="0.04 ${0.0125} 0.43" rpy="0 0 0"/>-->
       <!--  <geometry>-->
@@ -135,16 +156,17 @@
         </geometry>
         <xacro:material_yaskawa_blue/>
       </visual>
-      <!--<collision>-->
-      <!--  <geometry>-->
-      <!--    <sphere radius="0.13"/>-->
-      <!--  </geometry>-->
-      <!--</collision>-->
       <collision>
         <geometry>
           <mesh filename="package://motoman_gp20hl_support/meshes/collision/link_5_b.stl"/>
         </geometry>
       </collision>
+      <!--<collision>-->
+      <!--  <geometry>-->
+      <!--    <sphere radius="0.13"/>-->
+      <!--  </geometry>-->
+      <!--</collision>-->
+
     </link>
     <link name="${prefix}link_6_t">
       <visual>
@@ -153,16 +175,17 @@
         </geometry>
         <xacro:material_yaskawa_blue/>
       </visual>
-      <!--<collision>-->
-      <!--  <geometry>-->
-      <!--    <sphere radius="0.095"/> &lt;!&ndash;Operation6&ndash;&gt;-->
-      <!--  </geometry>-->
-      <!--</collision>-->
       <collision>
         <geometry>
           <mesh filename="package://motoman_gp20hl_support/meshes/collision/link_6_t.stl"/>
         </geometry>
       </collision>
+      <!--<collision>-->
+      <!--  <geometry>-->
+      <!--    <sphere radius="0.095"/> &lt;!&ndash;Operation6&ndash;&gt;-->
+      <!--  </geometry>-->
+      <!--</collision>-->
+
     </link>
     <!-- end of link list -->
 

@@ -1,8 +1,599 @@
 <?xml version="1.0" ?>
 
 <robot name="motoman_gp25" xmlns:xacro="http://ros.org/wiki/xacro">
-	<xacro:include filename="$(find motoman_gp25_support)/urdf/gp25_macro.xacro" />
-	<xacro:motoman_gp25 prefix=""/>
+    <xacro:include filename="$(find motoman_gp25_support)/urdf/gp25_macro.xacro" />
+    <!-- TODO: The use_structured_light_gantry should not be taken care of in this file.
+                It is not a child of the gp25. It should be constructed in a file that calls this one. -->
+    <xacro:macro
+        name="load_motoman_gp25"
+        params="
+            prefix:=gp25_
+            world_base_xyz
+            world_base_rpy
+            tool_type
+            mount_type
+            use_tip_cleaning_station
+            pedestal_type
+            pedestal_height
+            use_pedestal_mount:=false
+            calibration_data_path:=''
+            base_parent_link_name
+            use_rtf_hub_box:=false
+            use_murrplastik_cable_box:=false">
+
+        <!-- Used so that that default args can be used with the way we do things. Should be changed when we refactor to just use normal default args. -->
+        <xacro:property name="evaluated_calibration_data_path" value="${calibration_data_path if calibration_data_path != '' else '$(find path_motoman_gp25_support)/config'}"/>
+        <!-- This is a way to split up the xyz values. Leaving this here for future reference. -->
+        <!-- world_base_xyz="${xyzList[0]} ${xyzList[1]} ${xyzList[2] + 0.7} if pedestal_type else world_base_xyz}" -->
+        <xacro:property name="xyzList" value="${map(float, world_base_xyz.split())}"/>
+
+        <xacro:if value="${use_pedestal_mount}">
+            <xacro:motoman_gp25
+                prefix="${prefix}"
+                world_base_xyz="${xyzList[0]} ${xyzList[1]} ${xyzList[2] + 0}"
+                world_base_rpy="${world_base_rpy}"
+                calibration_data_path="${evaluated_calibration_data_path}"
+                base_parent_link_name="${'pedestal_mount'}"
+            />
+        </xacro:if>
+
+        <xacro:if value="${not use_pedestal_mount}">
+            <xacro:motoman_gp25
+                prefix="${prefix}"
+                world_base_xyz="${xyzList[0]} ${xyzList[1]} ${xyzList[2] + 0}"
+                world_base_rpy="${world_base_rpy}"
+                calibration_data_path="${evaluated_calibration_data_path}"
+                base_parent_link_name="${prefix+'pedestal_link' if pedestal_type!='none' else 'world'}"
+            />
+        </xacro:if>
+
+        <xacro:if value="${use_tip_cleaning_station}">
+            <xacro:include filename="$(find path_motoman_ma1440_support)/urdf/tip_cleaning_station/tip_cleaning_station.xacro" />
+            <xacro:tip_cleaning_station_load/>
+            <joint name="tcs_joint" type="fixed">
+                <origin xyz="-0.347 -0.80 0.520" rpy="0 0 0" />
+                <parent link="world" />
+                <child link="tip_cleaning_station_link" />
+                <axis xyz="0 0 0" />
+            </joint>
+            <joint name="tcs_joint_1" type="fixed">
+                <origin xyz="-0.143 -0.080 0.207" rpy="0 0 0" />
+                <parent link="tip_cleaning_station_link" />
+                <child link="anti_spatter_spray_station_link" />
+                <axis xyz="0 0 0" />
+            </joint>
+            <joint name="tcs_joint_2" type="fixed">
+                <origin xyz="0.003 -0.068 0.208" rpy="0 0 0" />
+                <parent link="tip_cleaning_station_link" />
+                <child link="reaming_station_link" />
+                <axis xyz="0 0 0" />
+            </joint>
+            <joint name="tcs_joint_3" type="fixed">
+                <origin xyz="0.135 -0.088 0.143" rpy="0 0 0" />
+                <parent link="tip_cleaning_station_link" />
+                <child link="wire_cutting_station_link" />
+                <axis xyz="0 0 0" />
+            </joint>
+        </xacro:if>
+
+        <xacro:if value="${use_rtf_hub_box}">
+            <link name="rtf_hub_box_link">
+                <visual>
+                    <origin xyz="0 0 0" rpy="0 0 0" />
+                    <geometry>
+                        <box size="0.254 0.254 0.1016" />
+                    </geometry>
+                    <material name="silver">
+                        <color rgba="0.8 0.8 0.8 1"/>
+                    </material>
+                </visual>
+                <collision>
+                    <origin xyz="0 0 0" rpy="0 0 0" />
+                    <geometry>
+                        <box size="0.254 0.254 0.1016" />
+                    </geometry>
+                    <material name="silver">
+                        <color rgba="0.8 0.8 0.8 1"/>
+                    </material>
+                </collision>
+            </link>
+            <joint name="rtf_hub_box_link_to_${prefix}link_l" type="fixed">
+                <parent link="${prefix}link_2_l" />
+                <child link="rtf_hub_box_link" />
+                <origin xyz="0.6625 0 -0.2839" rpy="0 0 0" />
+            </joint>
+        </xacro:if>
+
+        <xacro:if value="${use_murrplastik_cable_box}">
+            <link name="murrplastik_cable_box_link">
+                <visual>
+                    <origin xyz="0 0 0" rpy="${pi/2} 0 ${pi/2}" />
+                    <geometry>
+                        <box size="0.70 0.32 0.15" />
+                    </geometry>
+                    <material name="silver">
+                        <color rgba="0.8 0.8 0.8 1"/>
+                    </material>
+                </visual>
+                <collision>
+                    <origin xyz="0 0 0" rpy="${pi/2} 0 ${pi/2}" />
+                    <geometry>
+                        <box size="0.70 0.32 0.15" />
+                    </geometry>
+                    <material name="silver">
+                        <color rgba="0.8 0.8 0.8 1"/>
+                    </material>
+                </collision>
+            </link>
+            <joint name="murrplastik_cable_box_link_to_${prefix}link_l" type="fixed">
+                <parent link="${prefix}link_3_u" />
+                <child link="murrplastik_cable_box_link" />
+                <origin xyz="0.4244 0 0" rpy="0 0 0" />
+            </joint>
+        </xacro:if>
+
+        <xacro:if value="${pedestal_type!='none'}">
+            <xacro:include filename="$(find path_motoman_ma1440_support)/urdf/pedestal/pedestal.xacro" />
+            <xacro:pedestal_load
+                prefix="${prefix}"
+                pedestal_type="${pedestal_type}"
+                pedestal_height="${pedestal_height}"
+            />
+        </xacro:if>
+
+        <!-- tool files should define a ${prefix}link_tip -->
+        <xacro:if value="${tool_type == 'tool_welder_0'}">
+            <xacro:include filename="$(find path_motoman_ma1440_support)/urdf/tool_welder_0/tool_welder_0.xacro" />
+            <xacro:tool_welder_0_load
+                prefix="${prefix}" />
+            <xacro:property name="offsets" value="${xacro.load_yaml(evaluated_calibration_data_path + '/robot_calibration_offsets.yaml')[prefix + 'robot_calibration_offsets']}"/>
+            <joint name="${prefix}joint_tip" type="fixed">
+                <parent link="${prefix}link_6_t"/>
+                <child link="${prefix}link_tip"/>
+                <origin xyz="${-0.09591 + offsets[prefix + 'joint_tip']['x']} ${0 + offsets[prefix + 'joint_tip']['y']} ${-0.38772 + 0.0125 + offsets[prefix + 'joint_tip']['z']}"
+                        rpy="${-135*M_PI/180 + offsets[prefix + 'joint_tip']['roll']} ${0 + offsets[prefix + 'joint_tip']['pitch']} ${M_PI/2 + offsets[prefix + 'joint_tip']['yaw']}"/>
+                <axis xyz="0 0 0" />
+            </joint>
+        </xacro:if>
+
+        <!-- tool files should define a ${prefix}link_tip -->
+        <xacro:if value="${tool_type == 'tool_welder_1'}">
+            <xacro:include filename="$(find path_motoman_ma1440_support)/urdf/tool_welder_1/tool_welder_1.xacro" />
+            <xacro:tool_welder_1_load
+                prefix="${prefix}" />
+            <xacro:property name="offsets" value="${xacro.load_yaml(evaluated_calibration_data_path + '/robot_calibration_offsets.yaml')[prefix + 'robot_calibration_offsets']}"/>
+            <joint name="${prefix}joint_tip" type="fixed">
+                <parent link="${prefix}link_6_t"/>
+                <child link="${prefix}link_tip"/>
+                <!-- The tip extends to the negative z axis. So, positive numbers make is shorter and negative numbers make it longer. -->
+                <!-- add 0.06 to subtract the length of the black yaskawa adapter -->
+                <!-- subtract 0.01825625 to add the length of the new adapter -->
+                <origin xyz="${-0.09591 + offsets[prefix + 'joint_tip']['x']} ${0+ + offsets[prefix + 'joint_tip']['y']} ${-0.38772 + 0.0125 + 0.06 - 0.01825625 + offsets[prefix + 'joint_tip']['z']}"
+                        rpy="${-135*M_PI/180 + offsets[prefix + 'joint_tip']['roll']} ${0 + offsets[prefix + 'joint_tip']['pitch']} ${M_PI/2 + offsets[prefix + 'joint_tip']['yaw']}"/>
+                <axis xyz="0 0 0" />
+            </joint>
+        </xacro:if>
+
+        <!-- tool files should define a ${prefix}link_tip -->
+        <xacro:if value="${tool_type == 'tool_welder_2'}">
+            <xacro:include filename="$(find path_motoman_ma1440_support)/urdf/tool_welder_2/tool_welder_2.xacro" />
+            <xacro:tool_welder_2_load
+                prefix="${prefix}" />
+            <xacro:property name="offsets" value="${xacro.load_yaml(evaluated_calibration_data_path + '/robot_calibration_offsets.yaml')[prefix + 'robot_calibration_offsets']}"/>
+            <joint name="${prefix}joint_tip" type="fixed">
+                <parent link="${prefix}link_6_t"/>
+                <child link="${prefix}link_tip"/>
+                <!-- The tip extends to the negative z axis. So, positive numbers make is shorter and negative numbers make it longer. -->
+                <!-- add 0.06 to subtract the length of the black yaskawa adapter -->
+                <!-- subtract 0.01825625 to add the length of the new adapter -->
+                <!-- subtract 0.0127 to add the length of the wire pass-through -->
+                <origin xyz="${-0.09591 + offsets[prefix + 'joint_tip']['x']} ${0+ + offsets[prefix + 'joint_tip']['y']} ${-0.38772 + 0.0125 + 0.06 - 0.01825625 - 0.0127 + offsets[prefix + 'joint_tip']['z']}"
+                        rpy="${-135*M_PI/180 + offsets[prefix + 'joint_tip']['roll']} ${0 + offsets[prefix + 'joint_tip']['pitch']} ${M_PI/2 + offsets[prefix + 'joint_tip']['yaw']}"/>
+                <axis xyz="0 0 0" />
+            </joint>
+        </xacro:if>
+
+        <!-- tool files should define a ${prefix}link_tip -->
+        <!-- TODO: To phase out after adoption of new tip naming convention-->
+        <xacro:if value="${tool_type == 'tool_welder_tip'}">
+            <xacro:include filename="$(find path_motoman_ma1440_support)/urdf/tool_welder_tip/tool_welder_tip.xacro" />
+            <xacro:tool_welder_tip_load
+                prefix="${prefix}" />
+            <xacro:property name="offsets" value="${xacro.load_yaml(evaluated_calibration_data_path + '/robot_calibration_offsets.yaml')[prefix + 'robot_calibration_offsets']}"/>
+            <joint name="${prefix}joint_tip" type="fixed">
+                <parent link="${prefix}link_6_t"/>
+                <child link="${prefix}link_tip"/>
+                <!-- The tip extends to the negative z axis. So, positive numbers make is shorter and negative numbers make it longer. -->
+                <!-- add 0.06 to subtract the length of the black yaskawa adapter -->
+                <!-- subtract 0.01505 to add the length of the new adapter -->
+                <origin xyz="${-0.09591 + offsets[prefix + 'joint_tip']['x']} ${0 + offsets[prefix + 'joint_tip']['y']} ${-0.38772 + 0.0125 + 0.06 - 0.01505 + offsets[prefix + 'joint_tip']['z']}"
+                        rpy="${-135*M_PI/180 + offsets[prefix + 'joint_tip']['roll']} ${0 + offsets[prefix + 'joint_tip']['pitch']} ${M_PI/2 + offsets[prefix + 'joint_tip']['yaw']}"/>
+                <axis xyz="0 0 0" />
+            </joint>
+        </xacro:if>
+
+        <!-- tool files should define a ${prefix}link_tip -->
+        <xacro:if value="${tool_type == 'torch_A500_130'}">
+            <xacro:include filename="$(find path_motoman_ma1440_support)/urdf/torch_A500_130/torch_A500_130.xacro" />
+            <xacro:torch_A500_130_load
+                prefix="${prefix}" />
+            <xacro:property name="offsets" value="${xacro.load_yaml(evaluated_calibration_data_path + '/robot_calibration_offsets.yaml')[prefix + 'robot_calibration_offsets']}"/>
+            <joint name="${prefix}joint_tip" type="fixed">
+                <parent link="${prefix}link_6_t"/>
+                <child link="${prefix}link_tip"/>
+                <!-- The tip extends to the negative z axis. So, positive numbers make is shorter and negative numbers make it longer. -->
+                <!-- add 0.06 to subtract the length of the black yaskawa adapter -->
+                <!-- subtract 0.01505 to add the length of the new adapter -->
+                <origin xyz="${-0.09591 + offsets[prefix + 'joint_tip']['x']} ${0 + offsets[prefix + 'joint_tip']['y']} ${-0.38772 + 0.0125 + 0.06 - 0.01505 + offsets[prefix + 'joint_tip']['z']}"
+                        rpy="${-135*M_PI/180 + offsets[prefix + 'joint_tip']['roll']} ${0 + offsets[prefix + 'joint_tip']['pitch']} ${M_PI/2 + offsets[prefix + 'joint_tip']['yaw']}"/>
+                <axis xyz="0 0 0" />
+            </joint>
+        </xacro:if>
+
+        <!-- tool files should define a ${prefix}link_tip -->
+        <xacro:if value="${tool_type == 'torch_A500_160'}">
+            <xacro:include filename="$(find path_motoman_ma1440_support)/urdf/torch_A500_160/torch_A500_160.xacro" />
+            <xacro:torch_A500_160_load
+                prefix="${prefix}" />
+            <xacro:property name="offsets" value="${xacro.load_yaml(evaluated_calibration_data_path + '/robot_calibration_offsets.yaml')[prefix + 'robot_calibration_offsets']}"/>
+            <joint name="${prefix}joint_tip" type="fixed">
+                <parent link="${prefix}link_6_t"/>
+                <child link="${prefix}link_tip"/>
+                <!-- The tip extends to the negative z axis. So, positive numbers make is shorter and negative numbers make it longer. -->
+                <!-- add 0.06 to subtract the length of the black yaskawa adapter -->
+                <!-- subtract 0.01505 to add the length of the new adapter -->
+                <origin xyz="${-0.09591 + offsets[prefix + 'joint_tip']['x']} ${0 + offsets[prefix + 'joint_tip']['y']} ${-0.38772 + 0.0125 + 0.06 - 0.01505 + offsets[prefix + 'joint_tip']['z']}"
+                        rpy="${-135*M_PI/180 + offsets[prefix + 'joint_tip']['roll']} ${0 + offsets[prefix + 'joint_tip']['pitch']} ${M_PI/2 + offsets[prefix + 'joint_tip']['yaw']}"/>
+                <axis xyz="0 0 0" />
+            </joint>
+        </xacro:if>
+
+        <!-- tool files should define a ${prefix}link_tip -->
+        <xacro:if value="${tool_type == 'torch_W500_155'}">
+            <xacro:include filename="$(find path_motoman_ma1440_support)/urdf/torch_W500_155/torch_W500_155.xacro" />
+            <xacro:torch_W500_155_load
+                prefix="${prefix}" />
+            <xacro:property name="offsets" value="${xacro.load_yaml(evaluated_calibration_data_path + '/robot_calibration_offsets.yaml')[prefix + 'robot_calibration_offsets']}"/>
+            <joint name="${prefix}joint_tip" type="fixed">
+                <parent link="${prefix}link_6_t"/>
+                <child link="${prefix}link_tip"/>
+                <!-- The tip extends to the negative z axis. So, positive numbers make is shorter and negative numbers make it longer. -->
+                <!-- add 0.06 to subtract the length of the black yaskawa adapter -->
+                <!-- subtract 0.01505 to add the length of the new adapter -->
+                <origin xyz="${-0.09591 + offsets[prefix + 'joint_tip']['x']} ${0 + offsets[prefix + 'joint_tip']['y']} ${-0.38772 + 0.0125 + 0.06 - 0.01505 + offsets[prefix + 'joint_tip']['z']}"
+                        rpy="${-135*M_PI/180 + offsets[prefix + 'joint_tip']['roll']} ${0 + offsets[prefix + 'joint_tip']['pitch']} ${M_PI/2 + offsets[prefix + 'joint_tip']['yaw']}"/>
+                <axis xyz="0 0 0" />
+            </joint>
+        </xacro:if>
+
+        <xacro:if value="${mount_type =='mount_rtf_v1'}">
+            <xacro:include filename="$(find path_motoman_ma1440_support)/urdf/mount_rtf_v1/mount_rtf_v1.xacro"/>
+            <xacro:mount_rtf_v1_load prefix="${prefix}"/>
+            <joint name="joint_mount_rtf_v1" type="fixed">
+                <xacro:if value="${tool_type == 'tool_welder_2'}">
+                    <origin xyz="0 0 -0.0127" rpy="0 0 0"/>
+                </xacro:if>
+                <xacro:if value="${tool_type != 'tool_welder_2'}">
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                </xacro:if>
+                <parent link="${prefix}link_6_t"/>
+                <child link="${prefix}mount_link"/>
+                <axis xyz="0 0 0"/>
+            </joint>
+        </xacro:if>
+        <xacro:if value="${mount_type =='mount_rtf_v1-1'}">
+            <xacro:include filename="$(find path_motoman_ma1440_support)/urdf/mount_rtf_v1-1/mount_rtf_v1-1.xacro" />
+            <xacro:mount_rtf_v1-1_load prefix="${prefix}"/>
+            <joint name="joint_mount_rtf_v1-1" type="fixed">
+                <xacro:if value="${tool_type == 'tool_welder_2'}">
+                    <origin xyz="0 0 -0.0127" rpy="0 0 0" />
+                </xacro:if>
+                <xacro:if value="${tool_type != 'tool_welder_2'}">
+                    <origin xyz="0 0 0" rpy="0 0 0" />
+                </xacro:if>
+                <parent link="${prefix}link_6_t" />
+                <child link="${prefix}mount_link" />
+                <axis xyz="0 0 0" />
+            </joint>
+        </xacro:if>
+        <xacro:if value="${mount_type =='mount_rtf_v2'}">
+            <xacro:include filename="$(find path_motoman_ma1440_support)/urdf/mount_rtf_v2/mount_rtf_v2.xacro" />
+            <xacro:mount_rtf_v2_load prefix="${prefix}"/>
+            <joint name="joint_mount_rtf_v2" type="fixed">
+                <xacro:if value="${tool_type == 'tool_welder_2'}">
+                    <origin xyz="0 0 -0.0127" rpy="0 0 0" />
+                </xacro:if>
+                <xacro:if value="${tool_type != 'tool_welder_2'}">
+                    <origin xyz="0 0 0" rpy="0 0 0" />
+                </xacro:if>
+                <parent link="${prefix}link_6_t" />
+                <child link="${prefix}mount_link" />
+                <axis xyz="0 0 0" />
+            </joint>
+        </xacro:if>
+        <xacro:if value="${mount_type =='mount_rtf_v2-1'}">
+            <xacro:include filename="$(find path_motoman_ma1440_support)/urdf/mount_rtf_v2-1/mount_rtf_v2-1.xacro" />
+            <xacro:mount_rtf_v2-1_load prefix="${prefix}"/>
+            <joint name="joint_mount_rtf_v2-1" type="fixed">
+                <xacro:if value="${tool_type == 'tool_welder_2'}">
+                    <origin xyz="0 0 -0.0127" rpy="0 0 0" />
+                </xacro:if>
+                <xacro:if value="${tool_type != 'tool_welder_2'}">
+                    <origin xyz="0 0 0" rpy="0 0 0" />
+                </xacro:if>
+                <parent link="${prefix}link_6_t" />
+                <child link="${prefix}mount_link" />
+                <axis xyz="0 0 0" />
+            </joint>
+        </xacro:if>
+
+        <xacro:if value="${mount_type.startswith('mount_rtf')}">
+           <!-- Load the calibration file for the emitters and receivers -->
+           <xacro:property name="tfs" value="${xacro.load_yaml(evaluated_calibration_data_path + '/laser_mount_calibration.yaml')}"/>
+           <xacro:property name="calibrated_tfs" value="${xacro.load_yaml(evaluated_calibration_data_path + '/laser_scanner_calibration.yaml')}"/>
+           <joint name="joint_laser_mount" type="fixed">
+               <xacro:property name="tf" value="${tfs['joint_laser_mount']['transform']}"/>
+               <origin xyz="${tf['translation']['x']} ${tf['translation']['y']} ${tf['translation']['z']}"
+                       rpy="${tf['rotation']['roll']} ${tf['rotation']['pitch']} ${tf['rotation']['yaw']}"/>
+               <parent link="${prefix}link_6_t" />
+               <child link="${prefix}laser_mount_center_link" />
+               <axis xyz="0 0 0" />
+           </joint>
+           <joint name="joint_laser_center_to_receiver_1" type="fixed">
+               <xacro:property name="tf" value="${tfs['joint_laser_center_to_receiver_1']['transform']}"/>
+               <origin xyz="${tf['translation']['x']} ${tf['translation']['y']} ${tf['translation']['z']}"
+                       rpy="${tf['rotation']['roll']} ${tf['rotation']['pitch']} ${tf['rotation']['yaw']}"/>
+               <parent link="${prefix}laser_mount_center_link"/>
+               <child link ="${prefix}laser_1_receiver_dummy_link"/>
+               <axis xyz="0 0 0"/>
+           </joint>
+           <joint name="joint_laser_center_to_receiver_2" type="fixed">
+               <xacro:property name="tf" value="${tfs['joint_laser_center_to_receiver_2']['transform']}"/>
+               <origin xyz="${tf['translation']['x']} ${tf['translation']['y']} ${tf['translation']['z']}"
+                       rpy="${tf['rotation']['roll']} ${tf['rotation']['pitch']} ${tf['rotation']['yaw']}"/>
+               <parent link="${prefix}laser_mount_center_link"/>
+               <child link ="${prefix}laser_2_receiver_dummy_link"/>
+               <axis xyz="0 0 0"/>
+           </joint>
+           <!-- Load links for calibration between receiver 1 and lasers -->
+           <joint name="joint_laser_center_to_receiver_1_emitter_1" type="fixed">
+               <xacro:property name="tf" value="${tfs['joint_laser_center_to_receiver_1_emitter_1']['transform']}"/>
+               <origin xyz="${tf['translation']['x']} ${tf['translation']['y']} ${tf['translation']['z']}"
+                       rpy="${tf['rotation']['roll']} ${tf['rotation']['pitch']} ${tf['rotation']['yaw']}"/>
+               <parent link="${prefix}laser_mount_center_link"/>
+               <child link ="${prefix}receiver_1_laser_1_emitter_dummy_link"/>
+               <axis xyz="0 0 0"/>
+           </joint>
+           <joint name="joint_laser_center_to_receiver_1_emitter_2" type="fixed">
+               <xacro:property name="tf" value="${tfs['joint_laser_center_to_receiver_1_emitter_2']['transform']}"/>
+               <origin xyz="${tf['translation']['x']} ${tf['translation']['y']} ${tf['translation']['z']}"
+                       rpy="${tf['rotation']['roll']} ${tf['rotation']['pitch']} ${tf['rotation']['yaw']}"/>
+               <parent link="${prefix}laser_mount_center_link"/>
+               <child link ="${prefix}receiver_1_laser_2_emitter_dummy_link"/>
+               <axis xyz="0 0 0"/>
+           </joint>
+           <joint name="joint_laser_center_to_receiver_1_emitter_3" type="fixed">
+               <xacro:property name="tf" value="${tfs['joint_laser_center_to_receiver_1_emitter_3']['transform']}"/>
+               <origin xyz="${tf['translation']['x']} ${tf['translation']['y']} ${tf['translation']['z']}"
+                       rpy="${tf['rotation']['roll']} ${tf['rotation']['pitch']} ${tf['rotation']['yaw']}"/>
+               <parent link="${prefix}laser_mount_center_link"/>
+               <child link ="${prefix}receiver_1_laser_3_emitter_dummy_link"/>
+               <axis xyz="0 0 0"/>
+           </joint>
+           <joint name="joint_laser_center_to_receiver_1_emitter_4" type="fixed">
+               <xacro:property name="tf" value="${tfs['joint_laser_center_to_receiver_1_emitter_4']['transform']}"/>
+               <origin xyz="${tf['translation']['x']} ${tf['translation']['y']} ${tf['translation']['z']}"
+                       rpy="${tf['rotation']['roll']} ${tf['rotation']['pitch']} ${tf['rotation']['yaw']}"/>
+               <parent link="${prefix}laser_mount_center_link"/>
+               <child link ="${prefix}receiver_1_laser_4_emitter_dummy_link"/>
+               <axis xyz="0 0 0"/>
+           </joint>
+           <!-- Load links for calibration between receiver 2 and lasers -->
+           <joint name="joint_laser_center_to_receiver_2_emitter_1" type="fixed">
+               <xacro:property name="tf" value="${tfs['joint_laser_center_to_receiver_2_emitter_1']['transform']}"/>
+               <origin xyz="${tf['translation']['x']} ${tf['translation']['y']} ${tf['translation']['z']}"
+                       rpy="${tf['rotation']['roll']} ${tf['rotation']['pitch']} ${tf['rotation']['yaw']}"/>
+               <parent link="${prefix}laser_mount_center_link"/>
+               <child link ="${prefix}receiver_2_laser_1_emitter_dummy_link"/>
+               <axis xyz="0 0 0"/>
+           </joint>
+           <joint name="joint_laser_center_to_receiver_2_emitter_2" type="fixed">
+               <xacro:property name="tf" value="${tfs['joint_laser_center_to_receiver_2_emitter_2']['transform']}"/>
+               <origin xyz="${tf['translation']['x']} ${tf['translation']['y']} ${tf['translation']['z']}"
+                       rpy="${tf['rotation']['roll']} ${tf['rotation']['pitch']} ${tf['rotation']['yaw']}"/>
+               <parent link="${prefix}laser_mount_center_link"/>
+               <child link ="${prefix}receiver_2_laser_2_emitter_dummy_link"/>
+               <axis xyz="0 0 0"/>
+           </joint>
+           <joint name="joint_laser_center_to_receiver_2_emitter_3" type="fixed">
+               <xacro:property name="tf" value="${tfs['joint_laser_center_to_receiver_2_emitter_3']['transform']}"/>
+               <origin xyz="${tf['translation']['x']} ${tf['translation']['y']} ${tf['translation']['z']}"
+                       rpy="${tf['rotation']['roll']} ${tf['rotation']['pitch']} ${tf['rotation']['yaw']}"/>
+               <parent link="${prefix}laser_mount_center_link"/>
+               <child link ="${prefix}receiver_2_laser_3_emitter_dummy_link"/>
+               <axis xyz="0 0 0"/>
+           </joint>
+           <joint name="joint_laser_center_to_receiver_2_emitter_4" type="fixed">
+               <xacro:property name="tf" value="${tfs['joint_laser_center_to_receiver_2_emitter_4']['transform']}"/>
+               <origin xyz="${tf['translation']['x']} ${tf['translation']['y']} ${tf['translation']['z']}"
+                       rpy="${tf['rotation']['roll']} ${tf['rotation']['pitch']} ${tf['rotation']['yaw']}"/>
+               <parent link="${prefix}laser_mount_center_link"/>
+               <child link ="${prefix}receiver_2_laser_4_emitter_dummy_link"/>
+               <axis xyz="0 0 0"/>
+           </joint>
+            <joint name="joint_laser_center_to_receiver_2_emitter_5" type="fixed">
+                <xacro:property name="tf" value="${tfs['joint_laser_center_to_receiver_2_emitter_5']['transform']}"/>
+                <origin xyz="${tf['translation']['x']} ${tf['translation']['y']} ${tf['translation']['z']}"
+                        rpy="${tf['rotation']['roll']} ${tf['rotation']['pitch']} ${tf['rotation']['yaw']}"/>
+                <parent link="${prefix}laser_mount_center_link"/>
+                <child link ="${prefix}receiver_2_laser_5_emitter_dummy_link"/>
+                <axis xyz="0 0 0"/>
+            </joint>
+           <!--    load joints for calibrated scanners-->
+           <joint name="joint_mount_to_calibrated_scanner_1" type="fixed">
+               <xacro:property name ="tf" value="${calibrated_tfs['joint_mount_to_calibrated_scanner_1']['transform']}"/>
+               <origin xyz="${tf['translation']['x']} ${tf['translation']['y']} ${tf['translation']['z']}"
+                       rpy="${tf['rotation']['roll']} ${tf['rotation']['pitch']} ${tf['rotation']['yaw']}"/>
+               <parent link="${prefix}calibrated_scanners"/>
+               <child link="${prefix}scanner_1"/>
+               <axis xyz="0 0 0"/>
+           </joint>
+           <joint name="joint_mount_to_calibrated_scanner_2" type="fixed">
+               <xacro:property name ="tf" value="${calibrated_tfs['joint_mount_to_calibrated_scanner_2']['transform']}"/>
+               <origin xyz="${tf['translation']['x']} ${tf['translation']['y']} ${tf['translation']['z']}"
+                       rpy="${tf['rotation']['roll']} ${tf['rotation']['pitch']} ${tf['rotation']['yaw']}"/>
+               <parent link="${prefix}calibrated_scanners"/>
+               <child link="${prefix}scanner_2"/>
+               <axis xyz="0 0 0"/>
+           </joint>
+           <joint name="joint_mount_to_calibrated_scanner_3" type="fixed">
+               <xacro:property name ="tf" value="${calibrated_tfs['joint_mount_to_calibrated_scanner_3']['transform']}"/>
+               <origin xyz="${tf['translation']['x']} ${tf['translation']['y']} ${tf['translation']['z']}"
+                       rpy="${tf['rotation']['roll']} ${tf['rotation']['pitch']} ${tf['rotation']['yaw']}"/>
+               <parent link="${prefix}calibrated_scanners"/>
+               <child link="${prefix}scanner_3"/>
+               <axis xyz="0 0 0"/>
+           </joint>
+           <joint name="joint_mount_to_calibrated_scanner_4" type="fixed">
+               <xacro:property name ="tf" value="${calibrated_tfs['joint_mount_to_calibrated_scanner_4']['transform']}"/>
+               <origin xyz="${tf['translation']['x']} ${tf['translation']['y']} ${tf['translation']['z']}"
+                       rpy="${tf['rotation']['roll']} ${tf['rotation']['pitch']} ${tf['rotation']['yaw']}"/>
+               <parent link="${prefix}calibrated_scanners"/>
+               <child link="${prefix}scanner_4"/>
+               <axis xyz="0 0 0"/>
+           </joint>
+           <joint name="joint_mount_to_calibrated_scanner_5" type="fixed">
+               <xacro:property name ="tf" value="${calibrated_tfs['joint_mount_to_calibrated_scanner_5']['transform']}"/>
+               <origin xyz="${tf['translation']['x']} ${tf['translation']['y']} ${tf['translation']['z']}"
+                       rpy="${tf['rotation']['roll']} ${tf['rotation']['pitch']} ${tf['rotation']['yaw']}"/>
+               <parent link="${prefix}calibrated_scanners"/>
+               <child link="${prefix}scanner_5"/>
+               <axis xyz="0 0 0"/>
+           </joint>
+           <joint name="joint_mount_to_calibrated_scanner_6" type="fixed">
+               <xacro:property name ="tf" value="${calibrated_tfs['joint_mount_to_calibrated_scanner_6']['transform']}"/>
+               <origin xyz="${tf['translation']['x']} ${tf['translation']['y']} ${tf['translation']['z']}"
+                       rpy="${tf['rotation']['roll']} ${tf['rotation']['pitch']} ${tf['rotation']['yaw']}"/>
+               <parent link="${prefix}calibrated_scanners"/>
+               <child link="${prefix}scanner_6"/>
+               <axis xyz="0 0 0"/>
+           </joint>
+        </xacro:if>
+
+        <!-- optionally add the cam mount to the end of the arm, this is the laser scanner enclosure used on the Corsa system -->
+        <xacro:if value="${mount_type =='cam'}">
+            <xacro:include filename="$(find path_motoman_ma1440_support)/urdf/cam_mount/cam_mount.xacro" />
+            <xacro:cam_mount_load prefix="${prefix}"/>
+            <joint name="joint_cam_mount" type="fixed">
+                <origin xyz="0 0 -0.0735" rpy="${M_PI} 0 ${M_PI/2}" />
+                <parent link="${prefix}link_6_t" />
+                <child link="${prefix}cam_mount_link" />
+                <axis xyz="0 0 0" />
+            </joint>
+        </xacro:if>
+
+        <!-- optionally add chessboard to the end of the arm, replacing the welder tip -->
+        <xacro:if value="${mount_type =='chess_front'}">
+            <link name="${prefix}link_chessboard">
+                <visual>
+                    <origin rpy="0 0 0" xyz="0 0 -0.07" />
+                    <geometry>
+                        <box size="0.26 0.45 0.15" />
+                    </geometry>
+                    <material name="silver" />
+                </visual>
+                <collision>
+                    <origin rpy="0 0 0" xyz="0 0 -0.07" />
+                    <geometry>
+                        <box size="0.26 0.45 0.15" />
+                    </geometry>
+                    <material name="silver" />
+                </collision>
+                <inertial>
+                    <mass value="0.0" />
+                    <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0" />
+                    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0" />
+                </inertial>
+            </link>
+
+            <joint name="joint_chessboard" type="fixed">
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <parent link="${prefix}link_6_t" />
+                <child link="${prefix}link_chessboard" />
+                <axis xyz="0 0 0" />
+            </joint>
+        </xacro:if>
+
+        <!-- optionally add chessboard on a cam mount above the welder tip -->
+        <xacro:if value="${mount_type =='chess'}">
+            <link name="${prefix}link_chessboard">
+                <visual>
+                    <origin rpy="0 0 0" xyz="0.08 0 -0.16" />
+                    <geometry>
+                        <box size="0.08 0.26 0.18" />
+                    </geometry>
+                    <material name="silver">
+                        <color rgba="0.75 0.75 0.75 1"/>
+                    </material>
+                </visual>
+                <collision>
+                    <origin rpy="0 0 0" xyz="0.08 0 -0.16" />
+                    <geometry>
+                        <box size="0.08 0.26 0.18" />
+                    </geometry>
+                    <material name="silver">
+                        <color rgba="0.75 0.75 0.75 1"/>
+                    </material>
+                </collision>
+                <inertial>
+                    <mass value="0.0" />
+                    <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0" />
+                    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0" />
+                </inertial>
+            </link>
+
+            <joint name="joint_chessboard" type="fixed">
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <parent link="${prefix}link_6_t" />
+                <child link="${prefix}link_chessboard" />
+                <axis xyz="0 0 0" />
+            </joint>
+
+            <link name="${prefix}link_collar">
+                <visual>
+                    <origin rpy="0 0 0" xyz="0 0 -0.097" />
+                    <geometry>
+                        <cylinder length="0.054" radius="0.09"/>
+                    </geometry>
+                    <material name="black">
+                        <color rgba="0 0 0 0.5"/>
+                    </material>
+                </visual>
+                <collision>
+                    <origin rpy="0 0 0" xyz="0 0 -0.097" />
+                    <geometry>
+                        <cylinder length="0.054" radius="0.09"/>
+                    </geometry>
+                    <material name="black">
+                        <color rgba="0 0 0 1"/>
+                    </material>
+                </collision>
+                <inertial>
+                    <mass value="0.0" />
+                    <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0" />
+                    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0" />
+                </inertial>
+            </link>
+
+            <joint name="joint_collar" type="fixed">
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <parent link="${prefix}link_6_t" />
+                <child link="${prefix}link_collar" />
+                <axis xyz="0 0 0" />
+            </joint>
+        </xacro:if>
+
+    </xacro:macro>
 </robot>
 
 

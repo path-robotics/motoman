@@ -1,0 +1,96 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:macro name="motoman_motopos_mh1655_ts" params="prefix use_pedestal:=false">
++
+    <xacro:include filename="$(find motoman_resources)/urdf/common_materials.xacro"/>
+    <xacro:property name="pedestal_offset" value="0.695" />
+
+    <!-- link list -->
+    <link name="${prefix}base_link">
+      <visual>
+        <geometry>
+          <mesh filename="package://motoman_motopos_mh1655_support/meshes/motopos_mh1655_ts/visual/base_link.stl"/>
+        </geometry>
+        <xacro:if value="${use_pedestal}">
+          <origin xyz="0 0 ${pedestal_offset}" rpy="0 0 0"/>
+        </xacro:if>
+        <xacro:material_yaskawa_blue/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://motoman_motopos_mh1655_support/meshes/motopos_mh1655_ts/collision/base_link.stl"/>
+        </geometry>
+        <xacro:if value="${use_pedestal}">
+          <origin xyz="0 0 ${pedestal_offset}" rpy="0 0 0"/>
+        </xacro:if>
+      </collision>
+      <xacro:if value="${use_pedestal}">
+        <!-- Pedestal is 0.695m high -->
+        <visual>
+          <geometry>
+            <mesh filename="package://motoman_motopos_mh1655_support/meshes/motopos_mh1655_ts/visual/pedestal.stl"/>
+          </geometry>
+          <origin xyz="0 0 ${pedestal_offset}" rpy="0 0 0"/>
+          <xacro:material_yaskawa_blue/>
+        </visual>
+        <collision>
+          <geometry>
+            <mesh filename="package://motoman_motopos_mh1655_support/meshes/motopos_mh1655_ts/collision/pedestal.stl"/>
+          </geometry>
+          <origin xyz="0 0 ${pedestal_offset}" rpy="0 0 0"/>
+        </collision>
+      </xacro:if>
+    </link>
+    <link name="${prefix}link_1">
+      <visual>
+        <geometry>
+          <mesh filename="package://motoman_motopos_mh1655_support/meshes/motopos_mh1655_ts/visual/link_1.stl"/>
+        </geometry>
+        <material name="">
+          <color rgba="0.75294 0.75294 0.75294 1"/>
+        </material>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://motoman_motopos_mh1655_support/meshes/motopos_mh1655_ts/collision/link_1.stl"/>
+        </geometry>
+      </collision>
+    </link>
+    <!-- end of link list -->
+
+    <!-- joint list -->
+    <joint name="${prefix}joint_1" type="fixed"> <!-- staticized -->
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}link_1"/>
+      <origin xyz="0 0 ${pedestal_offset + 0.305}"
+              rpy="${pi} ${-pi/2} 0"/>
+      <axis xyz="0 0 1"/>
+      <limit lower="${-2*pi}" upper="${2*pi}" effort="1274" velocity="1.1309"/>
+    </joint>
+    <!-- end of joint list -->
+
+    <!-- ROS base_link to Robot Manufacturer World Coordinates transform -->
+    <link name="${prefix}base"/>
+    <joint name="${prefix}base_link-base" type="fixed">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}base"/>
+    </joint>
+
+    <!-- ROS-Industrial 'flange' frame: attachment point for EEF models -->
+    <link name="${prefix}flange"/>
+    <joint name="${prefix}joint_1-flange" type="fixed">
+      <origin xyz="0 0 0.230" rpy="0 0 0"/>
+      <parent link="${prefix}link_1"/>
+      <child link="${prefix}flange"/>
+    </joint>
+
+    <!-- ROS-Industrial 'tool0' frame: all-zeros tool frame -->
+    <link name="${prefix}tool0"/>
+    <joint name="${prefix}flange-tool0" type="fixed">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <parent link="${prefix}flange"/>
+      <child link="${prefix}tool0"/>
+    </joint>
+  </xacro:macro>
+</robot>

@@ -605,7 +605,7 @@ BOOL Ros_Controller_IsInMotion(Controller* controller, int* groups_in_motion)
 		for (groupNo = 0; groupNo < controller->numGroup; groupNo++)
 		{
 			BOOL groupDataInQ = Ros_MotionServer_GroupHasDataInQueue(controller, groupNo);
-			groups_in_motion[0] = (int)groupDataInQ;
+			groups_in_motion[groupNo] = (int)groupDataInQ;
 			if (groupDataInQ == ERROR)
 				rtn = ERROR;
 			else if (groupDataInQ == TRUE)

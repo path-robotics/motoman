@@ -44,6 +44,7 @@
 
 extern void Ros_MotionServer_StartNewConnection(Controller* controller, int sd);
 extern BOOL Ros_MotionServer_HasDataInQueue(Controller* controller);
+extern BOOL Ros_MotionServer_GroupHasDataInQueue(Controller* controller, int groupNo);
 extern BOOL Ros_MotionServer_ClearQ_All(Controller* controller);
 
 #endif

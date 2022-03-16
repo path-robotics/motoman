@@ -61,7 +61,7 @@
 #if (DX100)
 	#define MAX_CONTROLLABLE_GROUPS	3
 #else
-	#define MAX_CONTROLLABLE_GROUPS	4
+	#define MAX_CONTROLLABLE_GROUPS	8
 #endif
 
 #define INVALID_SOCKET -1

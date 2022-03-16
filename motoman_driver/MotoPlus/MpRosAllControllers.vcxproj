@@ -73,12 +73,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DX100|Win32'">
-    <NMakeBuildCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)\" -n "MotoRosDX1_" -o build</NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)" -n "MotoRosDX1_" -o build</NMakeBuildCommandLine>
     <NMakeOutput>MotoRosDX1_.out</NMakeOutput>
     <NMakePreprocessorDefinitions>$(NMakePreprocessorDefinitions);$(Configuration)</NMakePreprocessorDefinitions>
     <NMakeIncludeSearchPath>$(MP_VS_Install)$(Configuration)\inc</NMakeIncludeSearchPath>
-    <NMakeReBuildCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)\" -n "MotoRosDX1_" -o rebuild</NMakeReBuildCommandLine>
-    <NMakeCleanCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)\" -n "MotoRosDX1_" -o clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)" -n "MotoRosDX1_" -o rebuild</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)" -n "MotoRosDX1_" -o clean</NMakeCleanCommandLine>
     <NMakeForcedIncludes>
     </NMakeForcedIncludes>
     <OutDir>$(SolutionDir)output\$(Configuration)\</OutDir>
@@ -86,12 +86,12 @@
     </IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='FS100|Win32'">
-    <NMakeBuildCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)\" -n "MotoRosFS_" -o build</NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)" -n "MotoRosFS_" -o build</NMakeBuildCommandLine>
     <NMakeOutput>MotoRosFS_.out</NMakeOutput>
     <NMakePreprocessorDefinitions>$(NMakePreprocessorDefinitions);$(Configuration)</NMakePreprocessorDefinitions>
     <NMakeIncludeSearchPath>$(MP_VS_Install)$(Configuration)\inc</NMakeIncludeSearchPath>
-    <NMakeReBuildCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)\" -n "MotoRosFS_" -o rebuild</NMakeReBuildCommandLine>
-    <NMakeCleanCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)\" -n "MotoRosFS_" -o clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)" -n "MotoRosFS_" -o rebuild</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)" -n "MotoRosFS_" -o clean</NMakeCleanCommandLine>
     <NMakeForcedIncludes>
     </NMakeForcedIncludes>
     <OutDir>$(SolutionDir)output\$(Configuration)\</OutDir>
@@ -99,12 +99,12 @@
     </IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DX200|Win32'">
-    <NMakeBuildCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)\" -n "MotoRosDX2_" -o build</NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)" -n "MotoRosDX2_" -o build</NMakeBuildCommandLine>
     <NMakeOutput>MotoRosDX2_.out</NMakeOutput>
     <NMakePreprocessorDefinitions>$(NMakePreprocessorDefinitions);$(Configuration)</NMakePreprocessorDefinitions>
     <NMakeIncludeSearchPath>$(MP_VS_Install)$(Configuration)\inc</NMakeIncludeSearchPath>
-    <NMakeReBuildCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)\" -n "MotoRosDX2_" -o rebuild</NMakeReBuildCommandLine>
-    <NMakeCleanCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)\" -n "MotoRosDX2_" -o clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)" -n "MotoRosDX2_" -o rebuild</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)" -n "MotoRosDX2_" -o clean</NMakeCleanCommandLine>
     <NMakeForcedIncludes>
     </NMakeForcedIncludes>
     <OutDir>$(SolutionDir)output\$(Configuration)\</OutDir>
@@ -112,23 +112,23 @@
     </IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRC1000|Win32'">
-    <NMakeBuildCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)\" -n "MotoRosYRC1_" -o build</NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)" -n "MotoRosYRC1_" -o build</NMakeBuildCommandLine>
     <NMakeOutput>$(MP_VS_Install)DevTools\OnlineDownload.exe</NMakeOutput>
     <NMakePreprocessorDefinitions>$(NMakePreprocessorDefinitions);$(Configuration)</NMakePreprocessorDefinitions>
     <NMakeIncludeSearchPath>$(MP_VS_Install)$(Configuration)\inc</NMakeIncludeSearchPath>
-    <NMakeReBuildCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)\" -n "MotoRosYRC1_" -o rebuild</NMakeReBuildCommandLine>
-    <NMakeCleanCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)\" -n "MotoRosYRC1_" -o clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)" -n "MotoRosYRC1_" -o rebuild</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)" -n "MotoRosYRC1_" -o clean</NMakeCleanCommandLine>
     <NMakeForcedIncludes />
     <OutDir>$(SolutionDir)output\$(Configuration)\</OutDir>
     <IntDir />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='YRC1000u|Win32'">
-    <NMakeBuildCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)\" -n "MotoRosYRC1u_" -o build</NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)" -n "MotoRosYRC1u_" -o build</NMakeBuildCommandLine>
     <NMakeOutput>$(MP_VS_Install)DevTools\OnlineDownload.exe</NMakeOutput>
     <NMakePreprocessorDefinitions>$(NMakePreprocessorDefinitions);$(Configuration)</NMakePreprocessorDefinitions>
     <NMakeIncludeSearchPath>$(MP_VS_Install)$(Configuration)\inc</NMakeIncludeSearchPath>
-    <NMakeReBuildCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)\" -n "MotoRosYRC1u_" -o rebuild</NMakeReBuildCommandLine>
-    <NMakeCleanCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)\" -n "MotoRosYRC1u_" -o clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)" -n "MotoRosYRC1u_" -o rebuild</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>mpbuilder.exe -c $(Configuration) -p "$(ProjectDir)" -n "MotoRosYRC1u_" -o clean</NMakeCleanCommandLine>
     <NMakeForcedIncludes />
     <OutDir>$(SolutionDir)output\$(Configuration)\</OutDir>
     <IntDir />

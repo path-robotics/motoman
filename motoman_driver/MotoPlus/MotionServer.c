@@ -62,6 +62,7 @@ void Ros_MotionServer_JointTrajDataToIncQueue(Controller* controller, int groupN
 BOOL Ros_MotionServer_AddPulseIncPointToQ(Controller* controller, int groupNo, Incremental_data* dataToEnQ);
 BOOL Ros_MotionServer_ClearQ_All(Controller* controller);
 BOOL Ros_MotionServer_HasDataInQueue(Controller* controller);
+BOOL Ros_MotionServer_HasDataInQueue(Controller* controller, int groupNo);
 int Ros_MotionServer_GetQueueCnt(Controller* controller, int groupNo);
 void Ros_MotionServer_IncMoveLoopStart(Controller* controller);
 
@@ -1588,18 +1589,38 @@ int Ros_MotionServer_GetQueueCnt(Controller* controller, int groupNo)
 BOOL Ros_MotionServer_HasDataInQueue(Controller* controller)
 {
 	int groupNo;
-	int qCnt;
+	BOOL groupDataInQueue;
 	
 	for(groupNo=0; groupNo<controller->numGroup; groupNo++)
 	{
-		qCnt = Ros_MotionServer_GetQueueCnt(controller, groupNo);
-		if (qCnt > 0)
+    groupDataInQueue = Ros_MotionServer_HasDataInQueue(controller, groupNo);
+		if (groupDataInQueue == TRUE)
 			return TRUE;
-		else if (qCnt == ERROR)
+		else if (groupDataInQueue == ERROR)
 			return ERROR;
 	}
 		
 	return FALSE;
+}
+
+
+//-------------------------------------------------------------------
+// Check if the control group of the controller has data in queue
+//-------------------------------------------------------------------
+BOOL Ros_MotionServer_HasDataInQueue(Controller* controller, int groupNo)
+{
+  int qCnt;
+
+  if (groupNo >= controller->numGroup)
+    return ERROR;
+
+  qCnt = Ros_MotionServer_GetQueueCnt(controller, groupNo);
+  if (qCnt > 0)
+    return TRUE;
+  else if (qCnt == ERROR)
+    return ERROR;
+
+  return FALSE;
 }
 
 

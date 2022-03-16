@@ -184,11 +184,13 @@ typedef enum
 
 struct _SmBodyRobotStatus		// ROS_MSG_ROBOT_STATUS = 13
 {
+  // On the ROS side, data is read from the back of the buffer. So, by adding this to the front we can read the standard RobotStatus first, then read the new data
+  int groups_in_motion[4];  // Is each group currently executing a motion command:  -1=Unknown, 1=True, 0=False
 	int drives_powered;			// Servo Power: -1=Unknown, 1=ON, 0=OFF
 	int e_stopped;				// Controller E-Stop state: -1=Unknown, 1=True(ON), 0=False(OFF)
 	int error_code;				// Alarm code
 	int in_error;				// Is there an alarm:   -1=Unknown, 1=True, 0=False 
-	int in_motion;				// Is currently executing a motion command:  -1=Unknown, 1=True, 0=False 
+	int in_motion;				// Is currently executing a motion command:  -1=Unknown, 1=True, 0=False
 	int mode;  					// Controller/Pendant mode: -1=Unknown, 1=Manual(TEACH), 2=Auto(PLAY)
 	int motion_possible;		// Is the controller ready to receive motion: -1=Unknown, 1=ENABLED, 0=DISABLED 
 } __attribute__((__packed__));

@@ -2,7 +2,8 @@
 
 <robot name="motoman_gp25" xmlns:xacro="http://ros.org/wiki/xacro">
 	<xacro:include filename="$(find motoman_gp25_support)/urdf/gp25_macro.xacro" />
-	<xacro:motoman_gp25 prefix=""/>
+	<xacro:property name="kinematics" value="${xacro.load_yaml('$(find motoman_gp25_support)' + '/config/default_kinematics.yaml')}"/>
+	<xacro:motoman_gp25 prefix="" kinematics="${kinematics['kinematics']}"/>
 </robot>
 
 

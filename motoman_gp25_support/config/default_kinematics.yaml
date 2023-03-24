@@ -1,0 +1,68 @@
+---
+kinematics:
+  1_s:
+    alpha: 0.0
+    a: 0.0
+    theta: 0.0
+    d: 0.505
+    x: 0.0
+    y: -0.0
+    z: 0.505
+    roll: 0.0
+    pitch: 0.0
+    yaw: 0.0
+  2_l:
+    alpha: -1.5707963
+    a: 0.15
+    theta: -1.5707963
+    d: 0.0
+    x: 0.15
+    y: 0.0
+    z: 0.0
+    roll: 0.0
+    pitch: !degrees -90
+    yaw: !degrees -90
+  3_u:
+    alpha: 3.141592653589793
+    a: 0.76
+    theta: -0.0
+    d: -0.0
+    x: 0.76
+    y: 0.0
+    z: 0.0
+    roll: !degrees 180
+    pitch: 0.0
+    yaw: 0.0
+  4_r:
+    alpha: -1.5707963
+    a: 0.2
+    theta: -0.0
+    d: -0.795
+    x: 0.2
+    y: -0.795
+    z: -0.0
+    roll: !degrees -90
+    pitch: 0.0
+    yaw: 0.0
+  5_b:
+    alpha: 1.5707963
+    a: 0.0
+    theta: -0.0
+    d: -0.0
+    x: 0.0
+    y: 0.0
+    z: -0.0
+    roll: !degrees 90
+    pitch: 0.0
+    yaw: 0.0
+  6_t:
+    alpha: -1.5707963
+    a: 0.0
+    theta: -0.0
+    d: -0.1
+    x: 0.0
+    y: -0.1
+    z: -0.0
+    roll: !degrees -90
+    pitch: 0.0
+    yaw: 0.0

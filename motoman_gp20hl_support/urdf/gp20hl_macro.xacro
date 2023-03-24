@@ -138,7 +138,7 @@
       <origin xyz="${0 + kinematic_offsets['5_b']['x']} ${0 + kinematic_offsets['5_b']['y']} ${0 + kinematic_offsets['5_b']['z']}"
               rpy="${radians(90) + kinematic_offsets['5_b']['roll']} ${0 + kinematic_offsets['5_b']['pitch']} ${0 + kinematic_offsets['5_b']['yaw']}"/>
       <axis xyz="0 0 1"/>
-      <limit lower="${radians(-150)}" upper="${radians(150)}" effort="39.2" velocity="${radians(435)}"/>
+      <limit lower="${radians(-150)}" upper="${radians(150)}" effort="39.2" velocity="${radians(430)}"/>
     </joint>
     <joint name="${prefix}joint_6_t" type="revolute">
       <parent link="${prefix}link_5_b"/>
@@ -146,7 +146,7 @@
       <origin xyz="${0 + kinematic_offsets['6_t']['x']} ${-0.1 + kinematic_offsets['6_t']['y']} ${0 + kinematic_offsets['6_t']['z']}"
               rpy="${radians(-90) + kinematic_offsets['6_t']['roll']} ${0 + kinematic_offsets['6_t']['pitch']} ${0 + kinematic_offsets['6_t']['yaw']}"/>
       <axis xyz="0 0 1"/>
-      <limit lower="${radians(-210)}" upper="${radians(210)}" effort="19.6" velocity="${radians(700)}"/>
+      <limit lower="${radians(-210)}" upper="${radians(210)}" effort="19.6" velocity="${radians(630)}"/>
     </joint>
     <!-- end of joint list -->
 

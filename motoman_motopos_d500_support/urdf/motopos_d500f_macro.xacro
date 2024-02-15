@@ -2,7 +2,7 @@
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
   <!-- D500F model -->
 
-  <xacro:macro name="motoman_motopos_d500" params="prefix kinematic_offsets">
+  <xacro:macro name="motoman_motopos_d500f" params="prefix kinematic_offsets">
 
     <xacro:include filename="$(find motoman_resources)/urdf/common_materials.xacro"/>
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" ?>
 <robot name="motoman_motopos_d500" xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- D500B model -->
 
   <!-- Properties -->
   <material name="yaskawa_blue">

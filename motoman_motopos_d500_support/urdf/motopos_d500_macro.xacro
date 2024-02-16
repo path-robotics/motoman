@@ -1,5 +1,7 @@
 <?xml version="1.0" ?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- D500B model -->
+
   <xacro:macro name="motoman_motopos_d500" params="prefix kinematic_offsets">
 
     <xacro:include filename="$(find motoman_resources)/urdf/common_materials.xacro"/>

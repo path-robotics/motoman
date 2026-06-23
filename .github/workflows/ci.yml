@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [jazzy]
+  push:
+    branches: [jazzy]
+  workflow_dispatch:
+
+jobs:
+  colcon-build:
+    name: colcon build (jazzy)
+    runs-on: ubuntu-latest
+    container:
+      image: ros:jazzy-ros-base
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: src/motoman
+
+      - name: Install colcon
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends python3-colcon-common-extensions
+          rm -rf /var/lib/apt/lists/*
+
+      # Non-blocking: the moveit_configs still carry ROS 1-era deps that don't
+      # resolve under jazzy yet. Surface them without failing the build.
+      - name: rosdep (informational)
+        continue-on-error: true
+        shell: bash
+        run: |
+          rosdep update
+          rosdep install --from-paths src --ignore-src -r -y
+
+      - name: colcon build
+        shell: bash
+        run: |
+          source /opt/ros/jazzy/setup.bash
+          colcon build --event-handlers console_cohesion+

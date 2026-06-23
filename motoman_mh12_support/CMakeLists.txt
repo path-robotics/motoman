@@ -1,10 +1,9 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.12)
 
-project(motoman_mh12_support)
+project(motoman_mh12_support NONE)
 
-find_package(catkin REQUIRED)
-
-catkin_package()
+find_package(ament_cmake REQUIRED)
+ament_package()
 
 install(DIRECTORY config launch meshes urdf
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+  DESTINATION share/${PROJECT_NAME})
